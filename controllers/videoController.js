@@ -18,12 +18,15 @@ exports.getAllVideos = async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 10
     const skip = (page-1)*limit
-    const videos = await Video.find()
-      .populate('uploader','name')
-      .sort({createdAt:-1})
-      .skip(skip)
-      .limit(limit)
-      const total = Video.countDocuments()
+    
+    const [videos, total] = await Promise.all([
+      Video.find()
+        .populate('uploader', 'name')
+        .sort({createdAt: -1})
+        .skip(skip)
+        .limit(limit),
+      Video.countDocuments()
+    ])
       res.json({
         total, page, totalPages: Math.ceil(total/limit), videos
       })
