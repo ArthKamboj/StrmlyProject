@@ -76,3 +76,54 @@ exports.verifyOTP = async (req, res) => {
   res.json({message: 'Email verified successfully', token})
 }
 
+exports.resendOTP = async (req, res) => {
+  const { email } = req.body
+  const lowerEmail = email.toLowerCase()
+  const user = await User.findOne({ email: lowerEmail })
+  if (!user) return res.status(404).json({ error: 'User not found' })
+  if (user.isVerified) return res.status(400).json({ error: 'User already verified' })
+  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000)
+  user.otp = otp
+  user.otpExpiresAt = otpExpiresAt
+  await user.save()
+  await sendOTP(lowerEmail, otp)
+  res.json({ message: 'OTP resent successfully' })
+}
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body
+  const lowerEmail = email.toLowerCase()
+  const user = await User.findOne({ email: lowerEmail })
+  if (!user) return res.status(404).json({ error: 'User not found' })
+  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000)
+  user.otp = otp
+  user.otpExpiresAt = otpExpiresAt
+  await user.save()
+  await sendOTP(lowerEmail, otp)
+  res.json({ message: 'OTP sent for password reset' })
+}
+
+exports.verifyResetOTP = async (req, res) => {
+  const { email, otp } = req.body
+  const user = await User.findOne({ email: email.toLowerCase() })
+  if (!user) return res.status(404).json({ error: 'User not found' })
+  if (user.otp !== otp) return res.status(400).json({ error: 'Invalid OTP' })
+  if (user.otpExpiresAt < new Date()) return res.status(400).json({ error: 'OTP expired' })
+  res.json({ message: 'OTP verified. You can now reset your password.' })
+}
+
+exports.resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body
+  const user = await User.findOne({ email: email.toLowerCase() })
+  if (!user) return res.status(404).json({ error: 'User not found' })
+  if (user.otp !== otp) return res.status(400).json({ error: 'Invalid OTP' })
+  if (user.otpExpiresAt < new Date()) return res.status(400).json({ error: 'OTP expired' })
+  const hashedPassword = await bcrypt.hash(newPassword, 10)
+  user.password = hashedPassword
+  user.otp = undefined
+  user.otpExpiresAt = undefined
+  await user.save()
+  res.json({ message: 'Password reset successful' })
+}

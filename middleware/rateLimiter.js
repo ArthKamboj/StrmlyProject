@@ -1,4 +1,4 @@
-const rateLimit = require('express-rate-limiter')
+const rateLimit = require('express-rate-limit')
 const authLimiter = rateLimit({
     windowMs: 10*60*1000,
     max: 5,
