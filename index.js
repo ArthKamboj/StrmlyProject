@@ -3,12 +3,14 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const authRoutes = require('./routes/auth')
+const videoRoutes = require('./routes/video')
 
 const app = express();
 
 app.use(cors())
 app.use(express.json())
 app.use('/api/auth', authRoutes)
+app.use('/api', videoRoutes)
 
 mongoose
     .connect(process.env.MONGO_URI)
