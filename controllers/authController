@@ -1,33 +1,78 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const sendOTP = require('../utils/sendOTP')
 
 exports.signup = async (req, res) => {
   try {
     const { name, email, password } = req.body
-    const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await User.create({ name, email, password: hashedPassword })
+    const lowerEmail = email.trim().toLowerCase()
+    const existingUser = await User.findOne({ email: lowerEmail })
 
-    res.status(201).json({ message: 'User registered', userId: user._id })
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 min
+
+    if (existingUser) {
+      if (existingUser.isVerified) {
+        return res.status(400).json({ error: 'Email already registered' })
+      }
+      existingUser.otp = otp
+      existingUser.otpExpiresAt = otpExpiresAt
+      await existingUser.save()
+      await sendOTP(lowerEmail, otp)
+      return res.status(200).json({ message: 'New OTP sent to existing unverified user' })
+    }
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const newUser = await User.create({
+      name,
+      email: lowerEmail,
+      password: hashedPassword,
+      otp,
+      otpExpiresAt,
+      isVerified: false
+    })
+    await sendOTP(lowerEmail, otp)
+    res.status(201).json({ message: 'OTP sent to email for verification' })
   } catch (e) {
-    res.status(400).json({ error: 'User already exists or invalid data' })
+    console.error(e)
+    res.status(500).json({ error: 'Signup failed! Please try again' })
   }
 }
 
+
 exports.login = async (req, res) => {
   const { email, password } = req.body
-
-  const user = await User.findOne({ email })
-  if (!user) {
+  const lowerEmail = email.toLowerCase()
+  const user = await User.findOne({email: lowerEmail })
+  const isMatch = await bcrypt.compare(password, user.password)
+  if (!user || !isMatch) {
     return res.status(400).json({ error: 'Invalid credentials' })
   }
-
-  const isMatch = await bcrypt.compare(password, user.password)
-  if (!isMatch) {
-    return res.status(400).json({ error: 'Invalid credentials' })
+  if(!user.isVerified) {
+    return res.status(403).json({ error: 'Please verify your email first' })
   }
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: '24h',})
 
   res.json({ token })
-};
+}
+
+exports.verifyOTP = async (req, res) => {
+  const { email, otp } = req.body
+  const user = await User.findOne({email: email.toLowerCase()})
+
+  if (!user) return res.status(404).json({ error: 'User not found' })
+  if (user.isVerified) return res.status(400).json({error: 'User already verified'})
+  if (user.otp !== otp) return res.status(400).json({error: 'Invalid OTP'})
+  if (user.otpExpiresAt < new Date()) return res.status(400).json({ error: 'OTP expired' })
+
+  user.isVerified = true
+  user.otp = undefined
+  user.otpExpiresAt = undefined
+  await user.save()
+
+  const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET_KEY, {expiresIn:'24h'})
+
+  res.json({message: 'Email verified successfully', token})
+}
+
