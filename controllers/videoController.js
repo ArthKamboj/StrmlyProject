@@ -15,9 +15,19 @@ exports.uploadVideo = async (req, res) => {
 }
 exports.getAllVideos = async (req, res) => {
   try {
-    const videos = await Video.find().populate('uploader','name').sort({uploadDate: -1})
-    res.json(videos)
-  } catch (err) {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page-1)*limit
+    const videos = await Video.find()
+      .populate('uploader','name')
+      .sort({createdAt:-1})
+      .skip(skip)
+      .limit(limit)
+      const total = Video.countDocuments()
+      res.json({
+        total, page, totalPages: Math.ceil(total/limit), videos
+      })
+  } catch (e) {
     res.status(500).json({error: 'Failed to fetch videos'})
   }
 }
