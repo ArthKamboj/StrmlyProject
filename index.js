@@ -24,6 +24,7 @@ app.get('/', (req, res) => {res.render('home');});
 app.get('/signup', (req,res) => {res.render('signup')})
 app.get('/login', (req, res) => {res.render('login')})
 app.get('/verify-otp', (req, res) => {res.render('otp', {email: req.query.email})})
+app.get('/forgot-password', (req, res) => {res.render('forgot-password')})
 
 
 
