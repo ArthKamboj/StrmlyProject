@@ -18,7 +18,7 @@ exports.getAllVideos = async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 10
     const skip = (page-1)*limit
-    
+
     const [videos, total] = await Promise.all([
       Video.find()
         .populate('uploader', 'name')
@@ -32,5 +32,13 @@ exports.getAllVideos = async (req, res) => {
       })
   } catch (e) {
     res.status(500).json({error: 'Failed to fetch videos'})
+  }
+}
+exports.getRecommendedVideos = async (req, res) => {
+  try {
+    const videos = await Video.aggregate([{$sample: {size: 5}}])
+    res.json(videos)
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to fetch recommended videos' })
   }
 }
