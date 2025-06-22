@@ -5,7 +5,7 @@ const {uploadVideo, getAllVideos, getRecommendedVideos} = require('../controller
 const verifyToken = require('../middleware/authMiddleware')
 
 router.post('/upload', verifyToken, upload.single('video'), uploadVideo)
-router.get('/videos', getAllVideos)
+router.get('/', getAllVideos)
 router.get('/recommended', getRecommendedVideos)
 
 

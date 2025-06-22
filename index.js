@@ -10,12 +10,24 @@ const verifyToken = require('./middleware/authMiddleware')
 const cookieParser = require('cookie-parser')
 const app = express();
 
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com/'],
+      mediaSrc: ['https://res.cloudinary.com/'],
+      connectSrc: ["'self'"],
+    },
+  },
+}))
+
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
-app.use(helmet())
+// app.use(helmet())
 app.use(cors())
 app.use(express.json())
 app.use('/api/auth', authRoutes)
@@ -47,7 +59,9 @@ app.get('/dashboard', async (req, res) => {
     res.redirect('/login')
   }
 })
+
 app.get('/upload', verifyToken, (req, res) => {res.render('upload')})
+app.get('/videos', (req, res) => {res.render('videos')})
 
 
 

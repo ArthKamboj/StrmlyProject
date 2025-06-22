@@ -10,29 +10,17 @@
   <header>
     <h1>Welcome to STREAMSERVICE</h1>
     <nav>
-      <a href="#">Home</a>
-      <a href="#">My Videos</a>
-      <a href="#">Upload</a>
-      <a href="#">Settings</a>
-      <a href="/logout">Logout</a>
     </nav>
   </header>
 
   <main>
     <section class="welcome">
-      <h2>Hello, <%= user.name %> 👋</h2>
+      <h2>Hello, <%= user.name %></h2>
       <p>Ready to explore and share amazing content?</p>
-      <a href="/upload" class="cta-button">Upload a Video</a>
+      <a href="/upload" class="cta-button">Upload Video</a>
+      <a href="/videos" class="cta-button">View Videos</a>
     </section>
 
-    <section class="videos">
-      <h3>Featured Videos</h3>
-      <div class="video-grid">
-        <div class="video-card">🎬 Video 1</div>
-        <div class="video-card">🎥 Video 2</div>
-        <div class="video-card">📺 Video 3</div>
-      </div>
-    </section>
   </main>
 </body>
 </html>
