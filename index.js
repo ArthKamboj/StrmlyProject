@@ -19,9 +19,10 @@ app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api', videoRoutes)
 
-app.get('/', (req, res) => {
-  res.render('index');
-});
+app.get('/', (req, res) => {res.render('home');});
+app.get('/signup', (req,res) => {res.render('signup')})
+app.get('/login', (req, res) => {res.render('login')})
+
 
 mongoose
     .connect(process.env.MONGO_URI)
