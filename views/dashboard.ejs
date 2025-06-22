@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | STREAMSERVICE</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <header>
+    <h1>Welcome to STREAMSERVICE</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">My Videos</a>
+      <a href="#">Upload</a>
+      <a href="#">Settings</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="welcome">
+      <h2>Hello, <%= user.name %> 👋</h2>
+      <p>Ready to explore and share amazing content?</p>
+      <a href="/upload" class="cta-button">Upload a Video</a>
+    </section>
+
+    <section class="videos">
+      <h3>Featured Videos</h3>
+      <div class="video-grid">
+        <div class="video-card">🎬 Video 1</div>
+        <div class="video-card">🎥 Video 2</div>
+        <div class="video-card">📺 Video 3</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

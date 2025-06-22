@@ -26,6 +26,7 @@ exports.signup = async (req, res) => {
       existingUser.otpExpiresAt = otpExpiresAt
       await existingUser.save()
       await sendOTP(lowerEmail, otp)
+      res.redirect(`/verify-otp?email=${lowerEmail}`)
     }
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = await User.create({
@@ -51,40 +52,53 @@ exports.signup = async (req, res) => {
 
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body
-  const lowerEmail = email.toLowerCase()
-  const user = await User.findOne({email: lowerEmail })
-  const isMatch = await bcrypt.compare(password, user.password)
-  if (!user || !isMatch) {
-    return res.status(400).json({ error: 'Invalid credentials' })
-  }
-  if(!user.isVerified) {
-    return res.status(403).json({ error: 'Please verify your email first' })
+  const { email, password } = req.body;
+  const lowerEmail = email.toLowerCase();
+  const user = await User.findOne({ email: lowerEmail });
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(400).render('login', { error: 'Invalid credentials' });
   }
 
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {expiresIn: '24h',})
+  if (!user.isVerified) {
+    return res.status(403).render('login', { error: 'Please verify your email first' });
+  }
 
-  res.json({ token })
-}
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: '24h',
+  });
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+
+  res.redirect('/dashboard');
+};
 
 exports.verifyOTP = async (req, res) => {
-  const { email, otp } = req.body
-  const user = await User.findOne({email: email.toLowerCase()})
+  const { email, otp } = req.body;
+  const user = await User.findOne({ email: email.toLowerCase() });
 
-  if (!user) return res.status(404).json({ error: 'User not found' })
-  if (user.isVerified) return res.status(400).json({error: 'User already verified'})
-  if (user.otp !== otp) return res.status(400).json({error: 'Invalid OTP'})
-  if (user.otpExpiresAt < new Date()) return res.status(400).json({ error: 'OTP expired' })
+  if (!user) return res.status(404).render('otp', { email, error: 'User not found' });
+  if (user.isVerified) return res.status(400).render('otp', { email, error: 'User already verified' });
+  if (user.otp !== otp) return res.status(400).render('otp', { email, error: 'Invalid OTP' });
+  if (user.otpExpiresAt < new Date()) return res.status(400).render('otp', { email, error: 'OTP expired' });
 
-  user.isVerified = true
-  user.otp = undefined
-  user.otpExpiresAt = undefined
-  await user.save()
+  user.isVerified = true;
+  user.otp = undefined;
+  user.otpExpiresAt = undefined;
+  await user.save();
 
-  const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET_KEY, {expiresIn:'24h'})
-
-  res.json({message: 'Email verified successfully', token})
-}
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: '24h',
+  });
+  res.cookie('token', token, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+  res.redirect('/dashboard');
+};
 
 exports.resendOTP = async (req, res) => {
   const { email } = req.body

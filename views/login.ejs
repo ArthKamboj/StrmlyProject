@@ -10,10 +10,16 @@
   <div class="login-container">
     <h2>Login to STREAMSERVICE</h2>
     <form action="/api/auth/login" method="POST">
+      <label for="email">Email</label>
       <input type="email" name="email" placeholder="Email" required />
+
+      <label for="password">Password</label>
       <input type="password" name="password" placeholder="Password" required />
+
       <button type="submit">Login</button>
     </form>
+
+    <p><a href="/forgot-password">Forgot Password?</a></p>
     <p>Don't have an account? <a href="/signup">Sign up</a></p>
   </div>
 </body>

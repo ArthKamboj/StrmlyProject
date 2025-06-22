@@ -18,12 +18,22 @@
     .link-button:hover {
       color: #3b82f6;
     }
+    .error-msg {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Enter OTP</h2>
-    <form id="otpForm" method="POST" action="/api/auth/verify-otp">
+
+    <% if (typeof error !== 'undefined') { %>
+      <p class="error-msg"><%= error %></p>
+    <% } %>
+
+    <form method="POST" action="/api/auth/verify-otp">
       <label for="otp">Enter 6-digit OTP</label>
       <input type="text" id="otp" name="otp" maxlength="6" required placeholder="Enter OTP" />
       <input type="hidden" name="email" value="<%= email %>" />
@@ -32,26 +42,11 @@
 
     <p style="text-align: center; margin-top: 10px;">
       Didn't receive the OTP?
-      <button type="button" class="link-button" onclick="resendOTP('<%= email %>')">Resend OTP</button>
+      <form method="POST" action="/api/auth/resend-otp" style="display: inline;">
+        <input type="hidden" name="email" value="<%= email %>">
+        <button type="submit" class="link-button">Resend OTP</button>
+      </form>
     </p>
   </div>
-
-  <script>
-    function resendOTP(email) {
-      fetch('/api/auth/resend-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message || data.error || "OTP resent!");
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Failed to resend OTP. Please try again.");
-      });
-    }
-  </script>
 </body>
 </html>
