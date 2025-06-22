@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify OTP</title>
+  <link rel="stylesheet" href="/css/otp.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Enter OTP</h2>
+    <form method="POST" action="/api/auth/verify-otp">
+      <input type="text" name="otp" maxlength="6" placeholder="Enter 6-digit OTP" required />
+      <input type="hidden" name="email" value="<%= email %>" />
+      <button type="submit">Verify</button>
+    </form>
+  </div>
+</body>
+</html>

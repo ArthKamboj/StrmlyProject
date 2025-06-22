@@ -9,6 +9,12 @@ exports.signup = async (req, res) => {
     const lowerEmail = email.trim().toLowerCase()
     const existingUser = await User.findOne({ email: lowerEmail })
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        error: 'Password must be at least 8 characters and include uppercase, lowercase letters, and a digit'
+      })
+    }
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
     const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 min
 
@@ -20,7 +26,6 @@ exports.signup = async (req, res) => {
       existingUser.otpExpiresAt = otpExpiresAt
       await existingUser.save()
       await sendOTP(lowerEmail, otp)
-      return res.status(200).json({ message: 'New OTP sent to existing unverified user' })
     }
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = await User.create({
@@ -31,9 +36,14 @@ exports.signup = async (req, res) => {
       otpExpiresAt,
       isVerified: false
     })
+    await newUser.save()
     await sendOTP(lowerEmail, otp)
-    res.status(201).json({ message: 'OTP sent to email for verification' })
+    res.redirect(`/verify-otp?email=${lowerEmail}`)
   } catch (e) {
+    if(e.name == 'ValidationError')
+    {
+      return res.status(400).json({ error: e.message })
+    }
     console.error(e)
     res.status(500).json({ error: 'Signup failed! Please try again' })
   }

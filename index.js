@@ -12,6 +12,7 @@ const app = express();
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.urlencoded({extended: true}))
 
 app.use(helmet())
 app.use(cors())
@@ -22,6 +23,8 @@ app.use('/api', videoRoutes)
 app.get('/', (req, res) => {res.render('home');});
 app.get('/signup', (req,res) => {res.render('signup')})
 app.get('/login', (req, res) => {res.render('login')})
+app.get('/verify-otp', (req, res) => {res.render('otp', {email: req.query.email})})
+
 
 
 mongoose
