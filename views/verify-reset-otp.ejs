@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Reset OTP</title>
+  <link rel="stylesheet" href="/css/otp.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Verify Reset OTP</h2>
+    <form method="POST" action="/api/auth/verify-reset-otp">
+      <label for="otp">Enter the OTP sent to your email</label>
+      <input type="text" name="otp" placeholder="6-digit OTP" required />
+
+      <input type="hidden" name="email" value="<%= email %>" />
+      
+      <button type="submit">Verify OTP</button>
+    </form>
+    <p><a href="#" onclick="resendResetOTP('<%= email %>')">Resend OTP</a></p>
+  </div>
+
+  <script>
+    function resendResetOTP(email) {
+      fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+      .then(res => res.json())
+      .then(data => alert(data.message || "OTP resent!"))
+      .catch(() => alert("Failed to resend OTP"));
+    }
+  </script>
+</body>
+</html>

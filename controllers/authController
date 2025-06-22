@@ -112,7 +112,7 @@ exports.forgotPassword = async (req, res) => {
   user.otpExpiresAt = otpExpiresAt
   await user.save()
   await sendOTP(lowerEmail, otp)
-  res.json({ message: 'OTP sent for password reset' })
+  res.redirect(`/verify-reset-otp?email=${email}`)
 }
 
 exports.verifyResetOTP = async (req, res) => {
@@ -121,7 +121,8 @@ exports.verifyResetOTP = async (req, res) => {
   if (!user) return res.status(404).json({ error: 'User not found' })
   if (user.otp !== otp) return res.status(400).json({ error: 'Invalid OTP' })
   if (user.otpExpiresAt < new Date()) return res.status(400).json({ error: 'OTP expired' })
-  res.json({ message: 'OTP verified. You can now reset your password.' })
+  res.redirect(`/reset-password?email=${email}&otp=${otp}`);
+
 }
 
 exports.resetPassword = async (req, res) => {

@@ -5,25 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Verify OTP</title>
   <link rel="stylesheet" href="/css/otp.css" />
+  <style>
+    .link-button {
+      background: none;
+      border: none;
+      color: #60a5fa;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.95rem;
+    }
+    .link-button:hover {
+      color: #3b82f6;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h2>Enter OTP</h2>
     <form id="otpForm" method="POST" action="/api/auth/verify-otp">
-        <label for="otp">Enter 6-digit OTP</label>
-        <input type="text" id="otp" name="otp" maxlength="6" required placeholder="Enter OTP" />
-
-        <input type="hidden" name="email" value="<%= email %>" />
-  
-        <button type="submit">Verify</button>
+      <label for="otp">Enter 6-digit OTP</label>
+      <input type="text" id="otp" name="otp" maxlength="6" required placeholder="Enter OTP" />
+      <input type="hidden" name="email" value="<%= email %>" />
+      <button type="submit">Verify</button>
     </form>
 
-    <form id="resendForm" method="POST" action="/api/auth/resend-otp">
-    <input type="hidden" name="email" value="<%= email %>" />
     <p style="text-align: center; margin-top: 10px;">
-        Didn't receive the OTP? <button type="submit" class="link-button">Resend OTP</button>
+      Didn't receive the OTP?
+      <button type="button" class="link-button" onclick="resendOTP('<%= email %>')">Resend OTP</button>
     </p>
-    </form>
-</div>
+  </div>
+
+  <script>
+    function resendOTP(email) {
+      fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || data.error || "OTP resent!");
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Failed to resend OTP. Please try again.");
+      });
+    }
+  </script>
 </body>
 </html>

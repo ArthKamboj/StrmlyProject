@@ -25,6 +25,9 @@ app.get('/signup', (req,res) => {res.render('signup')})
 app.get('/login', (req, res) => {res.render('login')})
 app.get('/verify-otp', (req, res) => {res.render('otp', {email: req.query.email})})
 app.get('/forgot-password', (req, res) => {res.render('forgot-password')})
+app.get('/verify-reset-otp', (req, res) => {res.render('verify-reset-otp', {email: req.query.email})})
+app.get('/reset-password', (req, res) => {res.render('reset-password', {email: req.query.email, otp: req.query.otp})})
+
 
 
 
