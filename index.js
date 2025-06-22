@@ -6,6 +6,7 @@ const cors = require('cors')
 const path = require('path')
 const authRoutes = require('./routes/auth')
 const videoRoutes = require('./routes/video')
+const verifyToken = require('./middleware/authMiddleware')
 const cookieParser = require('cookie-parser')
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(helmet())
 app.use(cors())
 app.use(express.json())
 app.use('/api/auth', authRoutes)
-app.use('/api', videoRoutes)
+app.use('/api/videos', videoRoutes)
 
 app.get('/', (req, res) => {res.render('home');});
 app.get('/signup', (req,res) => {res.render('signup')})
@@ -27,8 +28,8 @@ app.get('/verify-otp', (req, res) => {res.render('otp', {email: req.query.email}
 app.get('/forgot-password', (req, res) => {res.render('forgot-password')})
 app.get('/verify-reset-otp', (req, res) => {res.render('verify-reset-otp', {email: req.query.email})})
 app.get('/reset-password', (req, res) => {res.render('reset-password', {email: req.query.email, otp: req.query.otp})})
-const jwt = require('jsonwebtoken');
-const User = require('./models/User');
+const jwt = require('jsonwebtoken')
+const User = require('./models/User')
 
 app.get('/dashboard', async (req, res) => {
   try {
@@ -46,6 +47,7 @@ app.get('/dashboard', async (req, res) => {
     res.redirect('/login')
   }
 })
+app.get('/upload', verifyToken, (req, res) => {res.render('upload')})
 
 
 

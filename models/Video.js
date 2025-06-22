@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 const videoSchema = new mongoose.Schema({
-    title: String,
+    title: {type: String, required: true},
     description: String,
-    videoUrl: String,
+    videoUrl: {type: String, required: true},
     uploader: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User', required: true
     },
 }, {timestamps: true})
 module.exports = mongoose.model('Video', videoSchema)
