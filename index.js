@@ -27,7 +27,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
-// app.use(helmet())
+
 app.use(cors())
 app.use(express.json())
 app.use('/api/auth', authRoutes)
@@ -62,10 +62,7 @@ app.get('/dashboard', async (req, res) => {
 
 app.get('/upload', verifyToken, (req, res) => {res.render('upload')})
 app.get('/videos', (req, res) => {res.render('videos')})
-
-
-
-
+app.get('/recommended', (req, res) => {res.render('recommended')})
 
 
 mongoose

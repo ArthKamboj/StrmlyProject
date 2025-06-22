@@ -5,22 +5,22 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
   const res = await fetch('/api/videos/upload', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${getCookie('token')}` // if needed
+      Authorization: `Bearer ${getCookie('token')}`
     },
     body: formData
-  });
+  })
 
-  const data = await res.json();
+  const data = await res.json()
 
   if (!res.ok) {
-    document.getElementById('error-msg').innerText = data.error || "Upload failed.";
+    document.getElementById('error-msg').innerText = data.error || "Upload failed."
   } else {
     alert("Video uploaded successfully!");
-    window.location.href = '/dashboard';
+    window.location.href = '/dashboard'
   }
 });
 function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
 }

@@ -1,0 +1,24 @@
+body {
+  background: #12273d;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem;
+}
+.video-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin: 1rem auto;
+  padding: 1rem;
+  text-align: center;
+}
+.video-thumb {
+  width: 500px;
+  height: auto;
+  border-radius: 6px;
+  cursor: pointer;
+}

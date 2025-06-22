@@ -10,23 +10,19 @@ body {
   min-height: 100vh;
   text-align: center;
 }
-
 .container {
   max-width: 800px;
   width: 100%;
 }
-
 h2 {
   margin-bottom: 20px;
 }
-
 .video-card {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 8px;
 }
-
 .video-thumb {
   width: 60%;
   max-width: 500px;
@@ -35,11 +31,9 @@ h2 {
   cursor: pointer;
   margin-bottom: 10px;
 }
-
 .pagination {
   margin-top: 20px;
 }
-
 button {
   padding: 10px 20px;
   margin: 0 6px;
@@ -49,7 +43,6 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
-
 button:disabled {
   background-color: #cccccc;
   color: #666666;
