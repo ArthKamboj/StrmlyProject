@@ -1,4 +1,4 @@
-#  Stream Service – Video Sharing Platform (Node.js + EJS)
+#  VidNest – Video Sharing Platform (Node.js + EJS)
 
 This is a full-stack web application. It allows users to register/login, upload videos, view a public video feed, and see recommended videos.
 
@@ -37,7 +37,7 @@ This is a full-stack web application. It allows users to register/login, upload 
 
 ---
 
-## ☁️ Cloudinary Integration
+##  Cloudinary Integration
 
 - Video files are uploaded using the official **Cloudinary Node SDK**.
 - Uploads are streamed to Cloudinary using `multer` and a configured `storage` engine.
